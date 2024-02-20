@@ -57,20 +57,21 @@ function main(sida, jobb, city) {
             .then(function (response) {
             var $ = cheerio.load(response.data);
             $("div a h3").each(function (index, element) {
-                JobbElements.push($(element).text());
+                var title = $(element).text();
+                var url = $(element).parent().attr('href') || '';
+                JobbElements.push({ title: title, url: url });
             });
             resolve();
         });
     });
 }
 ;
-function func() {
+function RunFunc() {
     return __awaiter(this, void 0, void 0, function () {
-        var job, stad, page, question, a, NumPage;
+        var job, stad, page, question, a, NumPage, yn, num;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!true) return [3 /*break*/, 5];
                     job = prompt("vilket jobb: ");
                     stad = prompt("vilken stad: ");
                     page = prompt("vilken vill du börja på: ");
@@ -82,18 +83,43 @@ function func() {
                     return [4 /*yield*/, main(page, job, stad)];
                 case 2:
                     _a.sent();
-                    NumPage = (+page) + 1;
-                    page = NumPage.toString();
+                    if (a === +question) {
+                        return [3 /*break*/, 4];
+                    }
+                    else {
+                        NumPage = (+page) + 1;
+                        page = NumPage.toString();
+                    }
                     _a.label = 3;
                 case 3:
                     a++;
                     return [3 /*break*/, 1];
                 case 4:
                     console.log(JobbElements);
-                    return [3 /*break*/, 5];
-                case 5: return [2 /*return*/];
+                    _a.label = 5;
+                case 5:
+                    if (!true) return [3 /*break*/, 9];
+                    yn = prompt("vill du se en sida till? (ja/nej):");
+                    if (!(yn === "ja")) return [3 /*break*/, 7];
+                    num = (+page) + 1;
+                    page = num.toString();
+                    return [4 /*yield*/, main(page, job, stad)];
+                case 6:
+                    _a.sent();
+                    console.log(JobbElements);
+                    return [3 /*break*/, 8];
+                case 7:
+                    if (yn === "nej") {
+                        return [3 /*break*/, 9];
+                    }
+                    else {
+                        console.log("oj! fel input");
+                    }
+                    _a.label = 8;
+                case 8: return [3 /*break*/, 5];
+                case 9: return [2 /*return*/];
             }
         });
     });
 }
-func();
+RunFunc();
