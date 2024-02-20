@@ -41,6 +41,12 @@ var axios_1 = require("axios");
 var cheerio = require("cheerio");
 var prompt = promptSync();
 var JobbElements = [];
+//webscraper function
+//@return{promise<void>} - ger ingen return, ändrar JobbElements och signalerar att den är klar
+//@param{sida} - vilket sidanummer som datan ska hämtas ifrån
+//@param{jobb} - vilket jobb som skall sökas efter
+//@param{city} - vilken stad man vill söka i
+//@precondition - att sidan, staden samt jobbet finns på hemsidan
 function main(sida, jobb, city) {
     return new Promise(function (resolve) {
         var url = "https://jobb.blocket.se/lediga-jobb-i-".concat(city, "/sida").concat(sida, "/?ks=freetext.").concat(jobb);
@@ -53,19 +59,25 @@ function main(sida, jobb, city) {
         else if (city === 'alla') {
             url = "https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida".concat(sida, "/?ks=freetext.").concat(jobb);
         }
-        axios_1.default.get(url)
-            .then(function (response) {
+        axios_1.default.get(url).then(function (response) {
             var $ = cheerio.load(response.data);
             $("div a h3").each(function (index, element) {
                 var title = $(element).text();
                 var url = $(element).parent().attr('href') || '';
-                JobbElements.push({ title: title, url: url });
+                var stad = '';
+                $(element).parent().parent().find("a").each(function (index, element) {
+                    if (index === 2) {
+                        stad = $(element).text();
+                    }
+                });
+                JobbElements.push({ title: title, stad: stad, url: url });
             });
             resolve();
         });
     });
 }
 ;
+//funktionen som gör att man kan köra main
 function RunFunc() {
     return __awaiter(this, void 0, void 0, function () {
         var job, stad, page, question, a, NumPage, yn, num;
