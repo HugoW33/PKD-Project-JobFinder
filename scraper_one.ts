@@ -9,7 +9,7 @@ const h2Elements: Array<string> = [];
 
 const prompt = promptSync();
 const job = prompt("vilket jobb: ")
-const result = prompt("vilken sida: ")
+let result = prompt("vilken vill du börja på: ")
 function main(x:string, y:string): void{
     if (y === 'alla'){
         axios({
@@ -21,7 +21,7 @@ function main(x:string, y:string): void{
             $("div a h3").each((index, element) => {
                 h2Elements.push($(element).text());
         });
-            console.log(h2Elements)
+        return h2Elements
         });
     }
     else{
@@ -34,15 +34,21 @@ function main(x:string, y:string): void{
             $("div a h3").each((index, element) => {
                 h2Elements.push($(element).text());
         });
-        if(h2Elements.length === 1){
-            console.log('inga jobb hittades')
-        }else{
-            console.log(h2Elements)
-        }
+        return h2Elements
         });
     }
 } 
 
 
-main(result, job)
+while(true){
+    main(result,job)
+    let question = prompt("vilken sida vill du sluta på: ")
+    for(let a = +result; a <= +question; a++){
+        main(result,job)
+        const w = (+result) + 1
+        result = w.toString()
+    }
+    console.log(h2Elements)
+    break;
+}
 
