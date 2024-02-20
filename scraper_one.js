@@ -39,66 +39,57 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var promptSync = require("prompt-sync");
 var axios_1 = require("axios");
 var cheerio = require("cheerio");
-//console.log(axios.isCancel('something'));
-var h2Elements = [];
 var prompt = promptSync();
-//const job = prompt("vilket jobb: ")
-//let result = prompt("vilken vill du börja på: ")
-function main(x, y) {
+var JobbElements = [];
+function main(sida, jobb, city) {
     return new Promise(function (resolve) {
-        if (y === 'alla') {
-            (0, axios_1.default)({
-                method: 'get',
-                url: "https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida".concat(x, "/"),
-            })
-                .then(function (response) {
-                var $ = cheerio.load(response.data);
-                $("div a h3").each(function (index, element) {
-                    h2Elements.push($(element).text());
-                });
-                resolve();
-            });
+        var url = "https://jobb.blocket.se/lediga-jobb-i-".concat(city, "/sida").concat(sida, "/?ks=freetext.").concat(jobb);
+        if (jobb === 'alla' && city === 'alla') {
+            url = "https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida".concat(sida, "/");
         }
-        else {
-            (0, axios_1.default)({
-                method: 'get',
-                url: "https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida".concat(x, "/?ks=freetext.").concat(y),
-            })
-                .then(function (response) {
-                var $ = cheerio.load(response.data);
-                $("div a h3").each(function (index, element) {
-                    h2Elements.push($(element).text());
-                });
-                resolve();
-            });
+        else if (jobb === 'alla') {
+            url = "https://jobb.blocket.se/lediga-jobb-i-".concat(city, "/sida").concat(sida, "/");
         }
+        else if (city === 'alla') {
+            url = "https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida".concat(sida, "/?ks=freetext.").concat(jobb);
+        }
+        axios_1.default.get(url)
+            .then(function (response) {
+            var $ = cheerio.load(response.data);
+            $("div a h3").each(function (index, element) {
+                JobbElements.push($(element).text());
+            });
+            resolve();
+        });
     });
 }
+;
 function func() {
     return __awaiter(this, void 0, void 0, function () {
-        var job, result, question, a, w;
+        var job, stad, page, question, a, NumPage;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     if (!true) return [3 /*break*/, 5];
                     job = prompt("vilket jobb: ");
-                    result = prompt("vilken vill du börja på: ");
+                    stad = prompt("vilken stad: ");
+                    page = prompt("vilken vill du börja på: ");
                     question = prompt("vilken sida vill du sluta på: ");
-                    a = +result;
+                    a = +page;
                     _a.label = 1;
                 case 1:
                     if (!(a <= +question)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, main(result, job)];
+                    return [4 /*yield*/, main(page, job, stad)];
                 case 2:
                     _a.sent();
-                    w = (+result) + 1;
-                    result = w.toString();
+                    NumPage = (+page) + 1;
+                    page = NumPage.toString();
                     _a.label = 3;
                 case 3:
                     a++;
                     return [3 /*break*/, 1];
                 case 4:
-                    console.log(h2Elements);
+                    console.log(JobbElements);
                     return [3 /*break*/, 5];
                 case 5: return [2 /*return*/];
             }
