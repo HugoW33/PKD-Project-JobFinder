@@ -36,12 +36,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.main = void 0;
+exports.main = exports.JobbElements = void 0;
 var promptSync = require("prompt-sync");
 var axios_1 = require("axios");
 var cheerio = require("cheerio");
 var prompt = promptSync();
-var JobbElements = [];
+exports.JobbElements = [];
 //webscraper function
 //@return{promise<void>} - ger ingen return, ändrar JobbElements och signalerar att den är klar
 //@param{sida} - vilket sidanummer som datan ska hämtas ifrån
@@ -73,9 +73,8 @@ function main(sida, jobbstad) {
                         stad = $(element).text();
                     }
                 });
-                stad = stad.replace('  ', '');
                 title = title.replace('    ', '');
-                JobbElements.push({ title: title, stad: stad, url: url });
+                exports.JobbElements.push({ title: title, stad: stad, url: url });
             });
             resolve();
         });
@@ -98,7 +97,7 @@ function RunFunc() {
                     _a.label = 2;
                 case 2:
                     if (!true) return [3 /*break*/, 6];
-                    JobbElements.forEach(function (element, index) {
+                    exports.JobbElements.forEach(function (element, index) {
                         console.log("".concat(index + 1, ". ").concat(element.title, ", ").concat(element.stad));
                     });
                     yn = prompt("vill du se en sida till? (ja/nej): ");
@@ -123,4 +122,4 @@ function RunFunc() {
         });
     });
 }
-RunFunc();
+//RunFunc();

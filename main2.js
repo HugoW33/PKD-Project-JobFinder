@@ -36,15 +36,17 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.retrieveHeaderUrls = exports.JobLstArr = void 0;
 var selenium_webdriver_1 = require("selenium-webdriver");
 var chrome_1 = require("selenium-webdriver/chrome");
 var readline = require("readline");
 function delay(ms) {
     return new Promise(function (resolve) { return setTimeout(resolve, ms); });
 }
+exports.JobLstArr = [];
 function retrieveHeaderUrls(searchQuery, pageNumber) {
     return __awaiter(this, void 0, void 0, function () {
-        var chromeOptions, driver, headerElements, headersWithUrls, _i, headerElements_1, headerElement, headerText, url;
+        var chromeOptions, driver, headerElements, _i, headerElements_1, headerElement, headerText, url;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -65,13 +67,12 @@ function retrieveHeaderUrls(searchQuery, pageNumber) {
                 case 3:
                     // Navigate to the webpage
                     _a.sent();
-                    return [4 /*yield*/, delay(1000)];
+                    return [4 /*yield*/, delay(500)];
                 case 4:
                     _a.sent();
                     return [4 /*yield*/, driver.findElements(selenium_webdriver_1.By.css("h3 a"))];
                 case 5:
                     headerElements = _a.sent();
-                    headersWithUrls = [];
                     _i = 0, headerElements_1 = headerElements;
                     _a.label = 6;
                 case 6:
@@ -84,13 +85,13 @@ function retrieveHeaderUrls(searchQuery, pageNumber) {
                 case 8:
                     url = _a.sent();
                     if (headerText && url) { // Check for null values
-                        headersWithUrls.push({ header: headerText, url: url });
+                        exports.JobLstArr.push({ title: headerText, stad: '', url: url });
                     }
                     _a.label = 9;
                 case 9:
                     _i++;
                     return [3 /*break*/, 6];
-                case 10: return [2 /*return*/, headersWithUrls];
+                case 10: return [2 /*return*/, exports.JobLstArr];
                 case 11: return [4 /*yield*/, driver.quit()];
                 case 12:
                     _a.sent();
@@ -100,6 +101,7 @@ function retrieveHeaderUrls(searchQuery, pageNumber) {
         });
     });
 }
+exports.retrieveHeaderUrls = retrieveHeaderUrls;
 // Function to get user input
 function prompt(question) {
     var rl = readline.createInterface({
@@ -113,9 +115,62 @@ function prompt(question) {
         });
     });
 }
+function displayRequirements(url) {
+    return __awaiter(this, void 0, void 0, function () {
+        var chromeOptions, driver, requirements, reqString, _i, requirements_1, req, reqText;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    chromeOptions = new chrome_1.Options();
+                    chromeOptions.addArguments("--headless");
+                    return [4 /*yield*/, new selenium_webdriver_1.Builder()
+                            .forBrowser("chrome")
+                            .setChromeOptions(chromeOptions)
+                            .withCapabilities(selenium_webdriver_1.Capabilities.chrome())
+                            .build()];
+                case 1:
+                    driver = _a.sent();
+                    _a.label = 2;
+                case 2:
+                    _a.trys.push([2, , 10, 12]);
+                    return [4 /*yield*/, driver.get(url)];
+                case 3:
+                    _a.sent();
+                    return [4 /*yield*/, delay(500)];
+                case 4:
+                    _a.sent();
+                    return [4 /*yield*/, driver.findElements(selenium_webdriver_1.By.xpath('//*[@id="pb-root"]/pb-page-job/div/section/div/div[2]/div[2]/section/div/pb-feature-job-qualifications/div/pb-section-job-qualification'))];
+                case 5:
+                    requirements = _a.sent();
+                    reqString = [];
+                    _i = 0, requirements_1 = requirements;
+                    _a.label = 6;
+                case 6:
+                    if (!(_i < requirements_1.length)) return [3 /*break*/, 9];
+                    req = requirements_1[_i];
+                    return [4 /*yield*/, req.getText()];
+                case 7:
+                    reqText = _a.sent();
+                    if (reqText) { // Check for null values
+                        reqString.push({ header: reqText });
+                    }
+                    _a.label = 8;
+                case 8:
+                    _i++;
+                    return [3 /*break*/, 6];
+                case 9: return [2 /*return*/, reqString];
+                case 10: return [4 /*yield*/, driver.quit()];
+                case 11:
+                    _a.sent();
+                    return [7 /*endfinally*/];
+                case 12: return [2 /*return*/];
+            }
+        });
+    });
+}
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var searchQuery, pageNumber, headersWithUrls, option, selectedLinkIndex, selectedLink, nextPagePrompt;
+        var searchQuery, pageNumber, headersWithUrls, option, selectedLinkIndex, selectedLink, reqs, search, nextPagePrompt;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, prompt("Enter your search query: ")];
@@ -124,43 +179,55 @@ function main() {
                     pageNumber = 1;
                     _a.label = 2;
                 case 2:
-                    if (!true) return [3 /*break*/, 6];
+                    if (!true) return [3 /*break*/, 12];
                     return [4 /*yield*/, retrieveHeaderUrls(searchQuery, pageNumber)];
                 case 3:
                     headersWithUrls = _a.sent();
                     console.log("Headers with URLs (Page ".concat(pageNumber, "):"));
                     headersWithUrls.forEach(function (headerWithUrl, index) {
-                        console.log("".concat(index + 1, ". ").concat(headerWithUrl.header));
+                        console.log("".concat(index + 1, ". ").concat(headerWithUrl.title));
                     });
                     return [4 /*yield*/, prompt("Enter the number of the link to view its contents, or type 'next' to go to the next page: ")];
                 case 4:
                     option = _a.sent();
-                    if (option.toLowerCase() === "next") {
-                        pageNumber++;
+                    if (!(option.toLowerCase() === "next")) return [3 /*break*/, 5];
+                    pageNumber++;
+                    return [3 /*break*/, 10];
+                case 5:
+                    selectedLinkIndex = parseInt(option) - 1;
+                    selectedLink = headersWithUrls[selectedLinkIndex];
+                    if (!selectedLink) return [3 /*break*/, 7];
+                    console.log("Showing information for: ".concat(selectedLink.title));
+                    return [4 /*yield*/, displayRequirements(selectedLink.url)];
+                case 6:
+                    reqs = _a.sent();
+                    reqs.forEach(function (req) {
+                        console.log(req.header);
+                    });
+                    return [3 /*break*/, 8];
+                case 7:
+                    console.log("Invalid option.");
+                    _a.label = 8;
+                case 8: return [4 /*yield*/, prompt("Continue? (y/n): ")];
+                case 9:
+                    search = _a.sent();
+                    if (search.toLowerCase() === "y") {
+                        return [3 /*break*/, 2];
                     }
                     else {
-                        selectedLinkIndex = parseInt(option) - 1;
-                        selectedLink = headersWithUrls[selectedLinkIndex];
-                        if (selectedLink) {
-                            console.log("Selected link: ".concat(selectedLink.header));
-                            // Now you can navigate to the selected link and extract its contents
-                            // For simplicity only utput the URL for now TODO
-                            console.log("URL: ".concat(selectedLink.url));
-                        }
-                        else {
-                            console.log("Invalid option.");
-                        }
+                        return [3 /*break*/, 12];
                     }
-                    return [4 /*yield*/, prompt("Do you want to continue to the next page? (yes/no): ")];
-                case 5:
+                    _a.label = 10;
+                case 10: return [4 /*yield*/, prompt("Do you want to continue to the next page? (yes/no): ")];
+                case 11:
                     nextPagePrompt = _a.sent();
                     if (nextPagePrompt.toLowerCase() !== "yes") {
-                        return [3 /*break*/, 6]; // Exit loop if the user does not want to proceed to the next page
+                        return [3 /*break*/, 12]; // Exit loop if the user does not want to proceed to the next page
                     }
                     return [3 /*break*/, 2];
-                case 6: return [2 /*return*/];
+                case 12: return [2 /*return*/];
             }
         });
     });
 }
-main();
+//main();

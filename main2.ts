@@ -2,12 +2,15 @@ import { Builder, By, Capabilities, WebDriver } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/chrome";
 import * as readline from 'readline';
 import * as promptSync from 'prompt-sync'
+import { type JobbLst } from "./scraper_one";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function retrieveHeaderUrls(searchQuery: string, pageNumber: number): Promise<{ header: string, url: string }[]> {
+export const JobLstArr: JobbLst = [];
+
+export async function retrieveHeaderUrls(searchQuery: string, pageNumber: number): Promise<JobbLst> {
     const chromeOptions = new Options();
     chromeOptions.addArguments("--headless");
 
@@ -26,16 +29,15 @@ async function retrieveHeaderUrls(searchQuery: string, pageNumber: number): Prom
         const headerElements = await driver.findElements(By.css("h3 a"));
         //
         // Extract header text and URL
-        const headersWithUrls: { header: string, url: string }[] = [];
         for (const headerElement of headerElements) {
             const headerText = await headerElement.getText();
             const url = await headerElement.getAttribute("href");
             if (headerText && url) { // Check for null values
-                headersWithUrls.push({ header: headerText, url: url });
+                JobLstArr.push({ title: headerText, stad: '', url: url });
             }
         }
 
-        return headersWithUrls;
+        return JobLstArr;
     } finally {
         await driver.quit();
     }
@@ -55,7 +57,7 @@ function prompt(question: string): Promise<string> {
     });
 }
 
-async function displayRequirements(url:string): Promise<{ header: string}[]> {
+export async function displayRequirements(url:string): Promise<{ header: string}[]> {
     const chromeOptions = new Options();
     chromeOptions.addArguments("--headless");
 
@@ -97,7 +99,7 @@ async function main() {
         const headersWithUrls = await retrieveHeaderUrls(searchQuery, pageNumber);
         console.log(`Headers with URLs (Page ${pageNumber}):`);
         headersWithUrls.forEach((headerWithUrl, index) => {
-            console.log(`${index + 1}. ${headerWithUrl.header}`);
+            console.log(`${index + 1}. ${headerWithUrl.title}`);
         });
 
         // Prompt user to choose an option
@@ -108,7 +110,7 @@ async function main() {
             const selectedLinkIndex = parseInt(option) - 1;
             const selectedLink = headersWithUrls[selectedLinkIndex];
             if (selectedLink) {
-                console.log(`Showing information for: ${selectedLink.header}`);
+                console.log(`Showing information for: ${selectedLink.title}`);
                 // Now you can navigate to the selected link and extract its contents
                 // For simplicity only utput the URL for now TODO
                 const reqs = await displayRequirements(selectedLink.url)
@@ -136,4 +138,4 @@ async function main() {
     }
 }
 
-main();
+//main();

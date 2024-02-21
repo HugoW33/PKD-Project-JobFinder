@@ -74,7 +74,7 @@ function normaliseInput() {
                     return [3 /*break*/, 1];
                 case 5:
                     // console.log(JobbElements);
-                    for (i_1 = JobbArr.length; i_1 < scraper_one_1.JobbElements.length; i_1++) {
+                    for (i_1 = JobbArr.length + 1; i_1 < scraper_one_1.JobbElements.length; i_1++) {
                         JobbArr.push("".concat(i_1, ": ").concat(scraper_one_1.JobbElements[i_1].title, " i ").concat(scraper_one_1.JobbElements[i_1].stad));
                     }
                     for (i_2 = JobbArr.length; i_2 < main2_1.JobLstArr.length; i_2++) {
