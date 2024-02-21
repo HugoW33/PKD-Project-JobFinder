@@ -15,17 +15,20 @@ const JobbElements: JobbLst = [];
 //@param{jobb} - vilket jobb som skall sökas efter
 //@param{city} - vilken stad man vill söka i
 //@precondition - att sidan, staden samt jobbet finns på hemsidan
-function main(sida:string, jobb:string, city:string): Promise<void>{
+export function main(sida:string, jobbstad: string): Promise<void>{
+    const stadarr = jobbstad.split(" ");
+    const jobb = stadarr[0]
+    const city = stadarr[1]
     return new Promise((resolve) =>{
-        let url = `https://jobb.blocket.se/lediga-jobb-i-${city}/sida${sida}/?ks=freetext.${jobb}`;
+        let url = `https://jobb.blocket.se/lediga-jobb-i-${encodeURIComponent(city)}/sida${encodeURIComponent(sida)}/?ks=freetext.${encodeURIComponent(jobb)}`;
         if (jobb === 'alla' && city === 'alla'){
-            url = `https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida${sida}/`;
+            url = `https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida${encodeURIComponent(sida)}/`;
         }
         else if (jobb === 'alla'){
-            url = `https://jobb.blocket.se/lediga-jobb-i-${city}/sida${sida}/`;
+            url = `https://jobb.blocket.se/lediga-jobb-i-${encodeURIComponent(city)}/sida${encodeURIComponent(sida)}/`;
         }
         else if (city === 'alla'){
-            url = `https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida${sida}/?ks=freetext.${jobb}`;   
+            url = `https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida${encodeURIComponent(sida)}/?ks=freetext.${encodeURIComponent(jobb)}`;   
         }
         axios.get(url).then(response => {
             const $ = cheerio.load(response.data);
@@ -44,15 +47,14 @@ function main(sida:string, jobb:string, city:string): Promise<void>{
         });
     });
 };
-     
+
 //funktionen som gör att man kan köra main
 async function RunFunc(): Promise<void>{
-    const job = prompt("vilket jobb: ");
-    const stad = prompt("vilken stad: ");
+    let job = prompt("vilket jobb och stad: ");
     let page = prompt("vilken vill du börja på: ");
     let question = prompt("vilken sida vill du sluta på: ");
     for(let a = +page; a <= +question; a++){
-        await main(page,job,stad);
+        await main(page.toLocaleLowerCase(),job.toLocaleLowerCase());
         if (a === +question){
             break;
         }
@@ -63,14 +65,14 @@ async function RunFunc(): Promise<void>{
     }
     console.log(JobbElements);
     while(true){
-        let yn = prompt("vill du se en sida till? (ja/nej):")
-        if(yn === "ja"){
+        let yn = prompt("vill du se en sida till? (ja/nej): ")
+        if(yn.toLocaleLowerCase() === "ja"){
             const num = (+page) + 1;
             page = num.toString();
-            await main(page,job,stad);
+            await main(page.toLocaleLowerCase(),job.toLocaleLowerCase());
             console.log(JobbElements);
         }
-        else if(yn === "nej"){
+        else if(yn.toLocaleLowerCase() === "nej"){
             break;
         }
         else{

@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.main = void 0;
 var promptSync = require("prompt-sync");
 var axios_1 = require("axios");
 var cheerio = require("cheerio");
@@ -47,17 +48,20 @@ var JobbElements = [];
 //@param{jobb} - vilket jobb som skall sökas efter
 //@param{city} - vilken stad man vill söka i
 //@precondition - att sidan, staden samt jobbet finns på hemsidan
-function main(sida, jobb, city) {
+function main(sida, jobbstad) {
+    var stadarr = jobbstad.split(" ");
+    var jobb = stadarr[0];
+    var city = stadarr[1];
     return new Promise(function (resolve) {
-        var url = "https://jobb.blocket.se/lediga-jobb-i-".concat(city, "/sida").concat(sida, "/?ks=freetext.").concat(jobb);
+        var url = "https://jobb.blocket.se/lediga-jobb-i-".concat(encodeURIComponent(city), "/sida").concat(encodeURIComponent(sida), "/?ks=freetext.").concat(encodeURIComponent(jobb));
         if (jobb === 'alla' && city === 'alla') {
-            url = "https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida".concat(sida, "/");
+            url = "https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida".concat(encodeURIComponent(sida), "/");
         }
         else if (jobb === 'alla') {
-            url = "https://jobb.blocket.se/lediga-jobb-i-".concat(city, "/sida").concat(sida, "/");
+            url = "https://jobb.blocket.se/lediga-jobb-i-".concat(encodeURIComponent(city), "/sida").concat(encodeURIComponent(sida), "/");
         }
         else if (city === 'alla') {
-            url = "https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida".concat(sida, "/?ks=freetext.").concat(jobb);
+            url = "https://jobb.blocket.se/lediga-jobb-i-hela-sverige/sida".concat(encodeURIComponent(sida), "/?ks=freetext.").concat(encodeURIComponent(jobb));
         }
         axios_1.default.get(url).then(function (response) {
             var $ = cheerio.load(response.data);
@@ -76,23 +80,23 @@ function main(sida, jobb, city) {
         });
     });
 }
+exports.main = main;
 ;
 //funktionen som gör att man kan köra main
 function RunFunc() {
     return __awaiter(this, void 0, void 0, function () {
-        var job, stad, page, question, a, NumPage, yn, num;
+        var job, page, question, a, NumPage, yn, num;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    job = prompt("vilket jobb: ");
-                    stad = prompt("vilken stad: ");
+                    job = prompt("vilket jobb och stad: ");
                     page = prompt("vilken vill du börja på: ");
                     question = prompt("vilken sida vill du sluta på: ");
                     a = +page;
                     _a.label = 1;
                 case 1:
                     if (!(a <= +question)) return [3 /*break*/, 4];
-                    return [4 /*yield*/, main(page, job, stad)];
+                    return [4 /*yield*/, main(page.toLocaleLowerCase(), job.toLocaleLowerCase())];
                 case 2:
                     _a.sent();
                     if (a === +question) {
@@ -111,17 +115,17 @@ function RunFunc() {
                     _a.label = 5;
                 case 5:
                     if (!true) return [3 /*break*/, 9];
-                    yn = prompt("vill du se en sida till? (ja/nej):");
-                    if (!(yn === "ja")) return [3 /*break*/, 7];
+                    yn = prompt("vill du se en sida till? (ja/nej): ");
+                    if (!(yn.toLocaleLowerCase() === "ja")) return [3 /*break*/, 7];
                     num = (+page) + 1;
                     page = num.toString();
-                    return [4 /*yield*/, main(page, job, stad)];
+                    return [4 /*yield*/, main(page.toLocaleLowerCase(), job.toLocaleLowerCase())];
                 case 6:
                     _a.sent();
                     console.log(JobbElements);
                     return [3 /*break*/, 8];
                 case 7:
-                    if (yn === "nej") {
+                    if (yn.toLocaleLowerCase() === "nej") {
                         return [3 /*break*/, 9];
                     }
                     else {
