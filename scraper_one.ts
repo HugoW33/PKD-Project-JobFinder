@@ -3,11 +3,11 @@ import axios from "axios";
 import * as cheerio from "cheerio"
 import { attr } from "cheerio/lib/api/attributes";
 import { find } from "cheerio/lib/api/traversing";
-type JobbLst = Array<{ title: string, stad:string, url: string}>
+export type JobbLst = Array<{ title: string, stad:string, url: string}>
 
 
 const prompt = promptSync();
-const JobbElements: JobbLst = [];
+export const JobbElements: JobbLst = [];
 
 //webscraper function
 //@return{promise<void>} - ger ingen return, ändrar JobbElements och signalerar att den är klar
