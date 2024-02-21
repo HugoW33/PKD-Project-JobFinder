@@ -45,8 +45,7 @@ var JobbElements = [];
 //webscraper function
 //@return{promise<void>} - ger ingen return, ändrar JobbElements och signalerar att den är klar
 //@param{sida} - vilket sidanummer som datan ska hämtas ifrån
-//@param{jobb} - vilket jobb som skall sökas efter
-//@param{city} - vilken stad man vill söka i
+//@param{jobbstad} - vilket jobb som skall sökas efter, och i vilken stad
 //@precondition - att sidan, staden samt jobbet finns på hemsidan
 function main(sida, jobbstad) {
     var stadarr = jobbstad.split(" ");
@@ -74,6 +73,8 @@ function main(sida, jobbstad) {
                         stad = $(element).text();
                     }
                 });
+                stad = stad.replace('  ', '');
+                title = title.replace('    ', '');
                 JobbElements.push({ title: title, stad: stad, url: url });
             });
             resolve();
@@ -85,55 +86,39 @@ exports.main = main;
 //funktionen som gör att man kan köra main
 function RunFunc() {
     return __awaiter(this, void 0, void 0, function () {
-        var job, page, question, a, NumPage, yn, num;
+        var job, page, yn, num;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     job = prompt("vilket jobb och stad: ");
                     page = prompt("vilken vill du börja på: ");
-                    question = prompt("vilken sida vill du sluta på: ");
-                    a = +page;
-                    _a.label = 1;
-                case 1:
-                    if (!(a <= +question)) return [3 /*break*/, 4];
                     return [4 /*yield*/, main(page.toLocaleLowerCase(), job.toLocaleLowerCase())];
-                case 2:
+                case 1:
                     _a.sent();
-                    if (a === +question) {
-                        return [3 /*break*/, 4];
-                    }
-                    else {
-                        NumPage = (+page) + 1;
-                        page = NumPage.toString();
-                    }
-                    _a.label = 3;
-                case 3:
-                    a++;
-                    return [3 /*break*/, 1];
-                case 4:
-                    console.log(JobbElements);
-                    _a.label = 5;
-                case 5:
-                    if (!true) return [3 /*break*/, 9];
+                    _a.label = 2;
+                case 2:
+                    if (!true) return [3 /*break*/, 6];
+                    JobbElements.forEach(function (element, index) {
+                        console.log("".concat(index + 1, ". ").concat(element.title, ", ").concat(element.stad));
+                    });
                     yn = prompt("vill du se en sida till? (ja/nej): ");
-                    if (!(yn.toLocaleLowerCase() === "ja")) return [3 /*break*/, 7];
+                    if (!(yn.toLocaleLowerCase() === "ja")) return [3 /*break*/, 4];
                     num = (+page) + 1;
                     page = num.toString();
                     return [4 /*yield*/, main(page.toLocaleLowerCase(), job.toLocaleLowerCase())];
-                case 6:
+                case 3:
                     _a.sent();
-                    console.log(JobbElements);
-                    return [3 /*break*/, 8];
-                case 7:
+                    return [3 /*break*/, 5];
+                case 4:
                     if (yn.toLocaleLowerCase() === "nej") {
-                        return [3 /*break*/, 9];
+                        return [3 /*break*/, 6];
                     }
                     else {
                         console.log("oj! fel input");
                     }
-                    _a.label = 8;
-                case 8: return [3 /*break*/, 5];
-                case 9: return [2 /*return*/];
+                    _a.label = 5;
+                case 5: return [3 /*break*/, 2];
+                case 6: return [2 /*return*/];
             }
         });
     });

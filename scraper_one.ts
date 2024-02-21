@@ -12,8 +12,7 @@ const JobbElements: JobbLst = [];
 //webscraper function
 //@return{promise<void>} - ger ingen return, ändrar JobbElements och signalerar att den är klar
 //@param{sida} - vilket sidanummer som datan ska hämtas ifrån
-//@param{jobb} - vilket jobb som skall sökas efter
-//@param{city} - vilken stad man vill söka i
+//@param{jobbstad} - vilket jobb som skall sökas efter, och i vilken stad
 //@precondition - att sidan, staden samt jobbet finns på hemsidan
 export function main(sida:string, jobbstad: string): Promise<void>{
     const stadarr = jobbstad.split(" ");
@@ -33,14 +32,15 @@ export function main(sida:string, jobbstad: string): Promise<void>{
         axios.get(url).then(response => {
             const $ = cheerio.load(response.data);
             $("div a h3").each((index, element) => {
-                const title = $(element).text();
+                let title = $(element).text();
                 const url = $(element).parent().attr('href') || '';
                 let stad = ''
                 $(element).parent().parent().find("a").each((index, element) =>{
                     if (index === 2){
                         stad = $(element).text();
                     }    
-                }); 
+                });
+                title = title.replace('    ', '') 
                 JobbElements.push({ title, stad, url });
             });
         resolve();
@@ -52,25 +52,16 @@ export function main(sida:string, jobbstad: string): Promise<void>{
 async function RunFunc(): Promise<void>{
     let job = prompt("vilket jobb och stad: ");
     let page = prompt("vilken vill du börja på: ");
-    let question = prompt("vilken sida vill du sluta på: ");
-    for(let a = +page; a <= +question; a++){
-        await main(page.toLocaleLowerCase(),job.toLocaleLowerCase());
-        if (a === +question){
-            break;
-        }
-        else{
-            const NumPage = (+page) + 1;
-            page = NumPage.toString();
-        }
-    }
-    console.log(JobbElements);
+    await main(page.toLocaleLowerCase(),job.toLocaleLowerCase());
     while(true){
+        JobbElements.forEach((element, index)=>{
+            console.log(`${index + 1}. ${element.title}, ${element.stad}`)
+        })
         let yn = prompt("vill du se en sida till? (ja/nej): ")
         if(yn.toLocaleLowerCase() === "ja"){
             const num = (+page) + 1;
             page = num.toString();
             await main(page.toLocaleLowerCase(),job.toLocaleLowerCase());
-            console.log(JobbElements);
         }
         else if(yn.toLocaleLowerCase() === "nej"){
             break;
