@@ -106,7 +106,7 @@ async function main() {
             pageNumber++;
         } else {
             const selectedLinkIndex = parseInt(option) - 1;
-            const selectedLink = await headersWithUrls[selectedLinkIndex];
+            const selectedLink = headersWithUrls[selectedLinkIndex];
             if (selectedLink) {
                 console.log(`Showing information for: ${selectedLink.header}`);
                 // Now you can navigate to the selected link and extract its contents
