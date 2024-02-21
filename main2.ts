@@ -1,6 +1,7 @@
 import { Builder, By, Capabilities, WebDriver } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/chrome";
 import * as readline from 'readline';
+import * as promptSync from 'prompt-sync'
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -20,7 +21,7 @@ async function retrieveHeaderUrls(searchQuery: string, pageNumber: number): Prom
     try {
         // Navigate to the webpage
         await driver.get(`https://arbetsformedlingen.se/platsbanken/annonser?q=${encodeURIComponent(searchQuery)}&page=${pageNumber}`);
-        await delay(1000);
+        await delay(500);
         // Retrieve all headers with URLs
         const headerElements = await driver.findElements(By.css("h3 a"));
         //
@@ -67,14 +68,16 @@ async function displayRequirements(url:string): Promise<{ header: string}[]> {
 
     try {
         await driver.get(url);
-        await delay(1000);
-        const requirements = await driver.findElements(By.css("h2"));
+        await delay(500);
+        const requirements = await driver.findElements(By.xpath('//*[@id="pb-root"]/pb-page-job/div/section/div/div[2]/div[2]/section/div/pb-feature-job-qualifications/div/pb-section-job-qualification'));
         const reqString: { header: string}[] = [];
     
         for (const req of requirements) {
             const reqText = await req.getText();
             if (reqText) { // Check for null values
+
                 reqString.push({ header: reqText});
+
             }
         }
         return reqString;
@@ -103,15 +106,25 @@ async function main() {
             pageNumber++;
         } else {
             const selectedLinkIndex = parseInt(option) - 1;
-            const selectedLink = headersWithUrls[selectedLinkIndex];
+            const selectedLink = await headersWithUrls[selectedLinkIndex];
             if (selectedLink) {
-                console.log(`Selected link: ${selectedLink.header}`);
+                console.log(`Showing information for: ${selectedLink.header}`);
                 // Now you can navigate to the selected link and extract its contents
                 // For simplicity only utput the URL for now TODO
-                displayRequirements(selectedLink.url);
-                console.log(`URL: ${selectedLink.url}`);
+                const reqs = await displayRequirements(selectedLink.url)
+                reqs.forEach(req => {
+
+                    console.log(req.header);
+                });
             } else {
                 console.log("Invalid option.");
+            }
+            const search = await prompt("Continue? (y/n): ");
+            if (search.toLowerCase()=== "y") {
+                continue;
+            }
+            else {
+                break;
             }
         }
 
