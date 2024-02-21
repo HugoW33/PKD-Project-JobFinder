@@ -72,4 +72,4 @@ async function RunFunc(): Promise<void>{
     }
     
 }
-RunFunc();
+//RunFunc();

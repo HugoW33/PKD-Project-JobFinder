@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.retrieveHeaderUrls = exports.JobLstArr = void 0;
+exports.displayRequirements = exports.retrieveHeaderUrls = exports.JobLstArr = void 0;
 var selenium_webdriver_1 = require("selenium-webdriver");
 var chrome_1 = require("selenium-webdriver/chrome");
 var readline = require("readline");
@@ -168,6 +168,7 @@ function displayRequirements(url) {
         });
     });
 }
+exports.displayRequirements = displayRequirements;
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var searchQuery, pageNumber, headersWithUrls, option, selectedLinkIndex, selectedLink, reqs, search, nextPagePrompt;

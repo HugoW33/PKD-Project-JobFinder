@@ -43,7 +43,7 @@ var JobbArr = [];
 var prompt = promptSync();
 function normaliseInput() {
     return __awaiter(this, void 0, void 0, function () {
-        var i, job, page, question, a, NumPage, i_1, i_2, nextPagePrompt, num, i_3, i_4;
+        var i, job, page, question, a, NumPage, allJobsLst, i_1, i_2, nextPagePrompt, num, i_3, i_4, jobNum, cringe;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -73,20 +73,24 @@ function normaliseInput() {
                     a++;
                     return [3 /*break*/, 1];
                 case 5:
-                    // console.log(JobbElements);
+                    allJobsLst = [];
                     for (i_1 = JobbArr.length + 1; i_1 < scraper_one_1.JobbElements.length; i_1++) {
                         JobbArr.push("".concat(i_1, ": ").concat(scraper_one_1.JobbElements[i_1].title, " i ").concat(scraper_one_1.JobbElements[i_1].stad));
+                        allJobsLst.push({ title: scraper_one_1.JobbElements[i_1].title, stad: scraper_one_1.JobbElements[i_1].stad,
+                            url: scraper_one_1.JobbElements[i_1].url });
                     }
                     for (i_2 = JobbArr.length; i_2 < main2_1.JobLstArr.length; i_2++) {
                         JobbArr.push("".concat(i_2, ": ").concat(main2_1.JobLstArr[i_2].title));
+                        allJobsLst.push({ title: main2_1.JobLstArr[i_2].title, stad: main2_1.JobLstArr[i_2].stad,
+                            url: main2_1.JobLstArr[i_2].url });
                     }
                     console.log(JobbArr);
                     _a.label = 6;
                 case 6:
-                    if (!true) return [3 /*break*/, 11];
-                    nextPagePrompt = prompt('vill du se en sida till? (ja/nej): ');
+                    if (!true) return [3 /*break*/, 14];
+                    nextPagePrompt = prompt('vill du se en sida till? (ja/nej) eller vill du visa ett jobb (svara med annaonsens siffra): ');
                     if (!(nextPagePrompt.toLocaleLowerCase() === 'ja')) return [3 /*break*/, 9];
-                    num = +page + 1;
+                    num = (+page) + 1;
                     page = num.toString();
                     return [4 /*yield*/, (0, scraper_one_1.main)(page.toLocaleLowerCase(), job.toLocaleLowerCase())];
                 case 7:
@@ -96,22 +100,38 @@ function normaliseInput() {
                     _a.sent();
                     for (i_3 = JobbArr.length; i_3 < scraper_one_1.JobbElements.length; i_3++) {
                         JobbArr.push("".concat(i_3, ": ").concat(scraper_one_1.JobbElements[i_3].title, " i ").concat(scraper_one_1.JobbElements[i_3].stad));
+                        allJobsLst.push({ title: scraper_one_1.JobbElements[i_3].title, stad: scraper_one_1.JobbElements[i_3].stad,
+                            url: scraper_one_1.JobbElements[i_3].url });
                     }
                     for (i_4 = JobbArr.length; i_4 < main2_1.JobLstArr.length; i_4++) {
                         JobbArr.push("".concat(i_4, ": ").concat(main2_1.JobLstArr[i_4].title));
+                        allJobsLst.push({ title: main2_1.JobLstArr[i_4].title, stad: main2_1.JobLstArr[i_4].stad,
+                            url: main2_1.JobLstArr[i_4].url });
                     }
                     console.log(JobbArr);
-                    return [3 /*break*/, 10];
+                    return [3 /*break*/, 13];
                 case 9:
-                    if (nextPagePrompt.toLocaleLowerCase() === 'nej') {
-                        return [3 /*break*/, 11];
+                    if (!(nextPagePrompt.toLocaleLowerCase() === 'nej')) return [3 /*break*/, 10];
+                    return [3 /*break*/, 14];
+                case 10:
+                    if (!!isNaN(parseInt(nextPagePrompt))) return [3 /*break*/, 12];
+                    jobNum = parseInt(nextPagePrompt);
+                    console.log(allJobsLst[jobNum].url);
+                    return [4 /*yield*/, (0, main2_1.displayRequirements)(allJobsLst[jobNum].url)];
+                case 11:
+                    cringe = _a.sent();
+                    if (allJobsLst[jobNum].url.includes('jobb.blocket')) {
+                        console.log("Se l\u00E4nk: \n".concat(allJobsLst[jobNum].url));
                     }
-                    else {
-                        console.log('Inte ett giltigt svar!');
-                    }
-                    _a.label = 10;
-                case 10: return [3 /*break*/, 6];
-                case 11: return [2 /*return*/];
+                    cringe.forEach(function (cringe) {
+                        console.log(cringe.header);
+                    });
+                    return [3 /*break*/, 13];
+                case 12:
+                    console.log('Inte ett giltigt svar!');
+                    _a.label = 13;
+                case 13: return [3 /*break*/, 6];
+                case 14: return [2 /*return*/];
             }
         });
     });
