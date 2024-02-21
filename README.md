@@ -1,10 +1,10 @@
 # PKD-Project-JobFinder
 Repo for the JobFinder project in the PKD course
 Supports Mac OS X, Linux and Windows
-Requirements:
--Selenium
--Axios
--Cheerio
+Requirements:\n
+-Selenium \n
+-Axios \n
+-Cheerio \n
 
 
 1. Install libraries and dependencies:
