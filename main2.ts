@@ -54,6 +54,37 @@ function prompt(question: string): Promise<string> {
     });
 }
 
+async function displayRequirements(url:string): Promise<{ header: string}[]> {
+    const chromeOptions = new Options();
+    chromeOptions.addArguments("--headless");
+
+    // Setup Chrome driver
+    const driver: WebDriver = await new Builder()
+        .forBrowser("chrome")
+        .setChromeOptions(chromeOptions)
+        .withCapabilities(Capabilities.chrome())
+        .build();
+
+    try {
+        await driver.get(url);
+        await delay(1000);
+        const requirements = await driver.findElements(By.css("h2"));
+        const reqString: { header: string}[] = [];
+    
+        for (const req of requirements) {
+            const reqText = await req.getText();
+            if (reqText) { // Check for null values
+                reqString.push({ header: reqText});
+            }
+        }
+        return reqString;
+    }
+
+    finally {
+        await driver.quit();
+    }
+}
+
 async function main() {
     let searchQuery = await prompt("Enter your search query: ");
     let pageNumber = 1; 
@@ -77,6 +108,7 @@ async function main() {
                 console.log(`Selected link: ${selectedLink.header}`);
                 // Now you can navigate to the selected link and extract its contents
                 // For simplicity only utput the URL for now TODO
+                displayRequirements(selectedLink.url);
                 console.log(`URL: ${selectedLink.url}`);
             } else {
                 console.log("Invalid option.");
@@ -90,6 +122,5 @@ async function main() {
         }
     }
 }
-
 
 main();
