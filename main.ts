@@ -1,9 +1,6 @@
-import { promise } from "selenium-webdriver";
 import {type JobbLst, JobbElements, main as scraperOneMain } from "./scraper_one";
 import * as promptSync from 'prompt-sync'
 import { retrieveHeaderUrls as scraperTwoMain, JobLstArr, displayRequirements} from "./main2";
-import { all } from "axios";
-import { for_each } from "../lib/list";
 
 const JobbArr: Array<string> = [];
 const prompt = promptSync();
@@ -63,12 +60,12 @@ async function normaliseInput(): Promise<void> {
         } else if (!isNaN(parseInt(nextPagePrompt))) {
             let jobNum: number = parseInt(nextPagePrompt);
             //console.log(allJobsLst[jobNum].url);
-            const cringe = await displayRequirements(allJobsLst[jobNum].url)
+            const cringe = await displayRequirements(allJobsLst[jobNum].url);
             if (allJobsLst[jobNum].url.includes('jobb.blocket')) {
                 console.log(`Se anonnsen för krav: \n${allJobsLst[jobNum].url}`);
             }
             cringe.forEach(cringe => {
-                console.log(cringe.header)
+                console.log(cringe.header);
             });
         
         } else {
