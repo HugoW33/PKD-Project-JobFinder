@@ -29,57 +29,59 @@ function jobArrCombind(arr: Array<JobbLst>): void {
     }
 }
 
+function arrayToText(arr: Array<string>): void {
+    for (let i = 0; i < arr.length; i++) {
+        console.log(`\n ${arr[i]}`);
+    }
+}
+
 async function normaliseInput(): Promise<void> {
     let i: number = 0;
     let job: string = prompt("vilket jobb och stad: ");
     let page: string = prompt("vilken vill du börja på: ");
-    let question = prompt("vilken sida vill du sluta på: ");
-    for (let a = +page; a <= +question; a++) {
-        await scraperOneMain(page.toLocaleLowerCase(),job.toLocaleLowerCase());
-        await scraperTwoMain(job.toLocaleLowerCase(), +page.toLocaleLowerCase());
-        if (a === +question) {
-            break;
-        }
-        else {
-            const NumPage = (+page) + 1;
-            page = NumPage.toString();
-        }
-    }
+    //let question = prompt("vilken sida vill du sluta på: ");
+    await scraperOneMain(page.toLocaleLowerCase(),job.toLocaleLowerCase());
+
+    await scraperTwoMain(job.toLocaleLowerCase(), +page.toLocaleLowerCase());
+
+    const NumPage = (+page) + 1;
+    page = NumPage.toString();
+
    // console.log(JobbElements);
 
     jobArrCombind([JobbElements, JobLstArr]);
-    // for (let i = JobbArr.length + 1; i < JobbElements.length; i++) {
-    //     JobbArr.push(`${i}: ${JobbElements[i].title} i ${JobbElements[i].stad}`);
-    //     allJobsLst.push({title: JobbElements[i].title, stad: JobbElements[i].stad, 
-    //                     url: JobbElements[i].url});
-    // }
-    // for (let i = JobbArr.length; i < JobLstArr.length; i++) {
-    //     JobbArr.push(`${i}: ${JobLstArr[i].title}`);
-    //     allJobsLst.push({title: JobLstArr[i].title, stad: JobLstArr[i].stad, 
-    //                     url: JobLstArr[i].url});
-    // }
-
-    console.log(JobbArr);
+    //console.log(JobbArr);
+    arrayToText(JobbArr);
     while (true) {
         let nextPagePrompt: string = prompt('vill du se en sida till? (ja/nej) eller vill du visa ett jobb (svara med annaonsens siffra): ');
         if (nextPagePrompt.toLocaleLowerCase() === 'ja') {
+
+            arrayToText(JobbArr);
+            const lastIndex = JobLstArr[-1];
+
+            if (JobbElements.length % 13 !== 0 && lastIndex === JobLstArr[-1]) {
+                console.error('Inga fler jobb !');
+                continue;
+            }
+            if (JobbElements.length % 13 === 0) {
+                await scraperOneMain(page.toLocaleLowerCase(), job.toLocaleLowerCase());
+            } else {
+                console.error('Inga fler jobb på blocket !!');
+            }
             const num = (+page) + 1;
             page = num.toString();
-            await scraperOneMain(page.toLocaleLowerCase(), job.toLocaleLowerCase());
             await scraperTwoMain(job.toLocaleLowerCase(), +page);
-            jobArrCombind([JobbElements, JobLstArr]);
-            // for (let i = JobbArr.length; i < JobbElements.length; i++) {
-            //     JobbArr.push(`${i}: ${JobbElements[i].title} i ${JobbElements[i].stad}`);
-            //     allJobsLst.push({title: JobbElements[i].title, stad: JobbElements[i].stad, 
-            //                      url: JobbElements[i].url});
-            // }
-            // for (let i = JobbArr.length; i < JobLstArr.length; i++) {
-            //     JobbArr.push(`${i}: ${JobLstArr[i].title}`);
-            //     allJobsLst.push({title: JobLstArr[i].title, stad: JobLstArr[i].stad, 
-            //                     url: JobLstArr[i].url});
-            // }
-            console.log(JobbArr);
+            if (lastIndex === JobLstArr[-1]) {
+                console.error('Inga fler jobb på Arbetsförmedlingen');
+                jobArrCombind([JobbElements]);
+            } else {
+                jobArrCombind([JobbElements, JobLstArr]);
+            } 
+            
         } else if (nextPagePrompt.toLocaleLowerCase() === 'nej') {
+            if (+page === 1) {
+                arrayToText(JobbArr);
+            }
             break;
         } else if (!isNaN(parseInt(nextPagePrompt))) {
             let jobNum: number = parseInt(nextPagePrompt);
