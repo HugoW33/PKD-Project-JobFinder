@@ -2,3 +2,4 @@
 chromedriver
 !jest.jestconfig.js
 README.md
+node_modules
