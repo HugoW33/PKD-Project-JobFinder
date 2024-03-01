@@ -6,12 +6,21 @@ const JobbArr: Array<string> = [];
 const prompt = promptSync();
 //Array with type jobLst used to print out relevant information that is not
 //displayed to the user
-const allJobsLst: JobbLst = [];
+export const allJobsLst: JobbLst = [];
 
-function jobArrCombind(arr: Array<JobbLst>): void {
+export function jobArrCombind(arr: Array<JobbLst>): void {
     let numberOfJobsPerPage = 0;
     for (let i = 0; i < arr.length; i++) {
         for (let jobLsting of arr[i]) {
+            let exists: boolean = false;
+            allJobsLst.forEach(element => {
+                if (element.url === jobLsting.url) {
+                    exists = true;
+                }
+            });
+            if (exists) {
+                continue;
+            }
             if (jobLsting.stad !== '') {
                 JobbArr.push(`${JobbArr.length + 1}: ${jobLsting.title} i ${jobLsting.stad}`);
                 allJobsLst.push({title: jobLsting.title, stad: jobLsting.stad,
@@ -35,17 +44,18 @@ function arrayToText(arr: Array<string>): void {
     }
 }
 
-async function normaliseInput(): Promise<void> {
-    let i: number = 0;
+export async function normaliseInput(): Promise<void> {
+    //let i: number = 0;
     let job: string = prompt("vilket jobb och stad: ");
-    let page: string = prompt("vilken vill du börja på: ");
+    //let page: string = prompt("vilken vill du börja på: ");
+    let page: number = 1;
     //let question = prompt("vilken sida vill du sluta på: ");
-    await scraperOneMain(page.toLocaleLowerCase(),job.toLocaleLowerCase());
 
-    await scraperTwoMain(job.toLocaleLowerCase(), +page.toLocaleLowerCase());
+    await scraperOneMain(page.toString(),job.toLocaleLowerCase());
+    await scraperTwoMain(job.toLocaleLowerCase(), page);
 
-    const NumPage = (+page) + 1;
-    page = NumPage.toString();
+    // const NumPage = (+page) + 1;
+    // page = NumPage;
 
    // console.log(JobbElements);
 
@@ -56,43 +66,45 @@ async function normaliseInput(): Promise<void> {
         let nextPagePrompt: string = prompt('vill du se en sida till? (ja/nej) eller vill du visa ett jobb (svara med annaonsens siffra): ');
         if (nextPagePrompt.toLocaleLowerCase() === 'ja') {
 
-            arrayToText(JobbArr);
-            const lastIndex = JobLstArr[-1];
-
-            if (JobbElements.length % 13 !== 0 && lastIndex === JobLstArr[-1]) {
+            const lastIndex = JobLstArr.slice(-1);
+            page += 1;
+            if (JobbElements.length % 13 !== 0 && lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
                 console.error('Inga fler jobb !');
                 continue;
             }
+
             if (JobbElements.length % 13 === 0) {
-                await scraperOneMain(page.toLocaleLowerCase(), job.toLocaleLowerCase());
+                await scraperOneMain(page.toString(), job.toLocaleLowerCase());
             } else {
                 console.error('Inga fler jobb på blocket !!');
+                jobArrCombind([JobLstArr]);
             }
-            const num = (+page) + 1;
-            page = num.toString();
-            await scraperTwoMain(job.toLocaleLowerCase(), +page);
-            if (lastIndex === JobLstArr[-1]) {
+
+            await scraperTwoMain(job.toLocaleLowerCase(), page);
+            //const num = page + 1;
+            if (lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
                 console.error('Inga fler jobb på Arbetsförmedlingen');
                 jobArrCombind([JobbElements]);
             } else {
                 jobArrCombind([JobbElements, JobLstArr]);
-            } 
-            
-        } else if (nextPagePrompt.toLocaleLowerCase() === 'nej') {
-            if (+page === 1) {
-                arrayToText(JobbArr);
             }
+            arrayToText(JobbArr);
+
+        } else if (nextPagePrompt.toLocaleLowerCase() === 'nej') {
             break;
         } else if (!isNaN(parseInt(nextPagePrompt))) {
-            let jobNum: number = parseInt(nextPagePrompt);
+            let jobNum: number = parseInt(nextPagePrompt) - 1;
             //console.log(allJobsLst[jobNum].url);
             const reqs = await displayRequirements(allJobsLst[jobNum].url);
             if (allJobsLst[jobNum].url.includes('jobb.blocket')) {
                 console.log(`Se anonnsen för krav: \n${allJobsLst[jobNum].url}`);
+            } else {
+                console.log(`Annons: ${allJobsLst[jobNum].url}`);
+                reqs.forEach(reqs => {
+                    console.log(reqs.header);
+                });
             }
-            reqs.forEach(reqs => {
-                console.log(reqs.header);
-            });
+
         
         } else {
             console.log('Inte ett giltigt svar!');
