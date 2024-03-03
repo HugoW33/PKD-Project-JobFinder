@@ -1,8 +1,8 @@
 import {type JobbLst, JobbElements, main as scraperOneMain } from "./scraper_one";
-import * as promptSync from 'prompt-sync'
+import  * as promptSync from 'prompt-sync'
 import { retrieveHeaderUrls as scraperTwoMain, JobLstArr, displayRequirements} from "./main2";
 
-const JobbArr: Array<string> = [];
+export const JobbArr: Array<string> = [];
 const prompt = promptSync();
 //Array with type jobLst used to print out relevant information that is not
 //displayed to the user
@@ -46,7 +46,10 @@ function arrayToText(arr: Array<string>): void {
 
 export async function normaliseInput(): Promise<void> {
     //let i: number = 0;
-    let job: string = prompt("vilket jobb och stad: ");
+    const job: string = prompt("vilket jobb och stad: ");
+    if (job === undefined) {
+        console.log('Oj, något gick fel!');
+    }
     //let page: string = prompt("vilken vill du börja på: ");
     let page: number = 1;
     //let question = prompt("vilken sida vill du sluta på: ");
@@ -63,11 +66,12 @@ export async function normaliseInput(): Promise<void> {
     //console.log(JobbArr);
     arrayToText(JobbArr);
     while (true) {
-        let nextPagePrompt: string = prompt('vill du se en sida till? (ja/nej) eller vill du visa ett jobb (svara med annaonsens siffra): ');
+        let nextPagePrompt: string = prompt('vill du se en sida till? (ja/nej) eller vill du visa ett jobb (svara med annaonsens siffra): ');        
         if (nextPagePrompt.toLocaleLowerCase() === 'ja') {
 
             const lastIndex = JobLstArr.slice(-1);
             page += 1;
+            await scraperTwoMain(job.toLocaleLowerCase(), page);
             if (JobbElements.length % 13 !== 0 && lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
                 console.error('Inga fler jobb !');
                 continue;
@@ -80,7 +84,6 @@ export async function normaliseInput(): Promise<void> {
                 jobArrCombind([JobLstArr]);
             }
 
-            await scraperTwoMain(job.toLocaleLowerCase(), page);
             //const num = page + 1;
             if (lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
                 console.error('Inga fler jobb på Arbetsförmedlingen');
@@ -112,4 +115,4 @@ export async function normaliseInput(): Promise<void> {
     }
 }
 
-normaliseInput();
+//normaliseInput();
