@@ -1,19 +1,41 @@
 import { Builder, By, Capabilities, WebDriver } from "selenium-webdriver";
 import { Options } from "selenium-webdriver/chrome";
 import * as readline from 'readline';
-import * as promptSync from 'prompt-sync'
+
 import { type JobbLst } from "./scraper_one";
 
-function delay(ms: number) {
+
+/**
+ * Creates an asynchronous delay for a specified amount of time.
+ *
+ * @param ms - number. The duration of the delay in milliseconds.
+ * @returns A Promise that resolves after the specified delay.
+ *
+ * @preconditions
+ *   * The provided `ms` value is a non-negative number. 
+ */
+
+function delay(ms: number) : Promise<void>{
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export const JobLstArr: JobbLst = [];
+/**
+ * Asynchronously retrieves job listing header titles and their corresponding 
+ * URLs from Arbetsförmedlingen, based on a provided search query and page number.
+ * 
+ * @param searchQuery - string. The search term to use for querying job listings.
+ * @param pageNumber - number.  The page number of the search results to retrieve.
+ * @returns - Promise<JobbLst> A Promise that resolves to a JobbLst object, containing 
+ *            arrays of job listing headers and their associated URLs.
+ * @preconditions
+ * pageNumber must be a non-negative number.
+ */
 
 export async function retrieveHeaderUrls(searchQuery: string, pageNumber: number): Promise<JobbLst> {
     const chromeOptions = new Options();
     chromeOptions.addArguments("--headless");
-
+    
     // Setup Chrome driver
     const driver: WebDriver = await new Builder()
         .forBrowser("chrome")
@@ -43,20 +65,14 @@ export async function retrieveHeaderUrls(searchQuery: string, pageNumber: number
     }
 }
 
-// Function to get user input
-function prompt(question: string): Promise<string> {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-    return new Promise(resolve => {
-        rl.question(question, answer => {
-            rl.close();
-            resolve(answer);
-        });
-    });
-}
-
+/**
+ * Asynchronously extracts job requirements from a given URL and returns the requirements as an array of objects.
+ *
+ * @param url - string. The URL of the job posting page.
+ * @returns - Promise. A Promise that resolves to an array of objects, where each object represents 
+ *          a job requirement and contains a `header` property with the requirement's text. 
+ * 
+ */
 export async function displayRequirements(url:string): Promise<{ header: string}[]> {
     const chromeOptions = new Options();
     chromeOptions.addArguments("--headless");
@@ -90,53 +106,6 @@ export async function displayRequirements(url:string): Promise<{ header: string}
     }
 }
 
-//function to test the webscraper individually
-async function main() {
-    let searchQuery = await prompt("Enter your search query: ");
-    let pageNumber = 1; 
 
-    while (true) {
-        // Retrieve headers and URLs for the current page
-        const headersWithUrls = await retrieveHeaderUrls(searchQuery, pageNumber);
-        console.log(`Headers with URLs (Page ${pageNumber}):`);
-        headersWithUrls.forEach((headerWithUrl, index) => {
-            console.log(`${index + 1}. ${headerWithUrl.title}`);
-        });
 
-        // Prompt user to choose an option
-        const option = await prompt("Enter the number of the link to view its contents, or type 'next' to go to the next page: ");
-        if (option.toLowerCase() === "next") {
-            pageNumber++;
-        } else {
-            const selectedLinkIndex = parseInt(option) - 1;
-            const selectedLink = headersWithUrls[selectedLinkIndex];
-            if (selectedLink) {
-                console.log(`Showing information for: ${selectedLink.title}`);
-                // Now you can navigate to the selected link and extract its contents
-                // For simplicity only utput the URL for now TODO
-                const reqs = await displayRequirements(selectedLink.url)
-                reqs.forEach(req => {
 
-                    console.log(req.header);
-                });
-            } else {
-                console.log("Invalid option.");
-            }
-            const search = await prompt("Continue? (y/n): ");
-            if (search.toLowerCase()=== "y") {
-                continue;
-            }
-            else {
-                break;
-            }
-        }
-
-        // Prompt user to continue or exit
-        const nextPagePrompt = await prompt("Do you want to continue to the next page? (yes/no): ");
-        if (nextPagePrompt.toLowerCase() !== "yes") {
-            break; // Exit loop if the user does not want to proceed to the next page
-        }
-    }
-}
-
-//main();
