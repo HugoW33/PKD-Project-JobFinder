@@ -90,6 +90,7 @@ export async function displayRequirements(url:string): Promise<{ header: string}
     }
 }
 
+//function to test the webscraper individually
 async function main() {
     let searchQuery = await prompt("Enter your search query: ");
     let pageNumber = 1; 

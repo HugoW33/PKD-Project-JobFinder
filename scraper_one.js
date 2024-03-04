@@ -43,10 +43,11 @@ var cheerio = require("cheerio");
 var prompt = promptSync();
 exports.JobbElements = [];
 //webscraper function
-//@return{promise<void>} - ger ingen return, ändrar JobbElements och signalerar att den är klar
-//@param{sida} - vilket sidanummer som datan ska hämtas ifrån
-//@param{jobbstad} - vilket jobb som skall sökas efter, och i vilken stad
-//@precondition - att sidan, staden samt jobbet finns på hemsidan
+//@return{promise<void>} - Doesent have any retrun value, changes JobbElements and resloves a promise
+//@param{sida} - Witch page we are on
+//@param{jobbstad} - Witch city and job we want to search for
+//@precondition - That the page exists, as well as 'jobbstad' is enterd 
+// with the job first and city after with a space between
 function main(sida, jobbstad) {
     var stadarr = jobbstad.split(" ");
     var jobb = stadarr[0];
@@ -82,7 +83,7 @@ function main(sida, jobbstad) {
 }
 exports.main = main;
 ;
-//funktionen som gör att man kan köra main
+//test function for main function
 function RunFunc() {
     return __awaiter(this, void 0, void 0, function () {
         var job, page, yn, num;
@@ -122,4 +123,3 @@ function RunFunc() {
         });
     });
 }
-//RunFunc();

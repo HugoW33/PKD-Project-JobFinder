@@ -8,6 +8,10 @@ const prompt = promptSync();
 //displayed to the user
 export const allJobsLst: JobbLst = [];
 
+//Function that combines diffrant JobbLst 
+//@return{void} - Doesent return anything
+//@param{arr} - Array<JobbLst> containing the JobbLst's to be combined
+//@precondition - The imput fufils the type requirements
 export function jobArrCombind(arr: Array<JobbLst>): void {
     let numberOfJobsPerPage = 0;
     for (let i = 0; i < arr.length; i++) {
@@ -37,33 +41,31 @@ export function jobArrCombind(arr: Array<JobbLst>): void {
         }
     }
 }
-
+//Text function
+//@return{void} - Doesent return anything, only console.log's
+//@param{arr} - A array<string> with n elements to be printed
+//@precondition - if the array is empty nothing happens. 
 function arrayToText(arr: Array<string>): void {
     for (let i = 0; i < arr.length; i++) {
         console.log(`\n ${arr[i]}`);
     }
 }
-
+//Main runing function
+//@return{promise<void>} - doesent return anything, resolves a prommise
+//@precondition - The imputs provided by the user are of the type that the prompt asks for
 export async function normaliseInput(): Promise<void> {
-    //let i: number = 0;
     const job: string = prompt("vilket jobb och stad: ");
     if (job === undefined) {
         console.log('Oj, något gick fel!');
     }
-    //let page: string = prompt("vilken vill du börja på: ");
     let page: number = 1;
-    //let question = prompt("vilken sida vill du sluta på: ");
 
     await scraperOneMain(page.toString(),job.toLocaleLowerCase());
     await scraperTwoMain(job.toLocaleLowerCase(), page);
 
-    // const NumPage = (+page) + 1;
-    // page = NumPage;
 
-   // console.log(JobbElements);
 
     jobArrCombind([JobbElements, JobLstArr]);
-    //console.log(JobbArr);
     arrayToText(JobbArr);
     while (true) {
         let nextPagePrompt: string = prompt('vill du se en sida till? (ja/nej) eller vill du visa ett jobb (svara med annaonsens siffra): ');        
@@ -84,7 +86,6 @@ export async function normaliseInput(): Promise<void> {
                 jobArrCombind([JobLstArr]);
             }
 
-            //const num = page + 1;
             if (lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
                 console.error('Inga fler jobb på Arbetsförmedlingen');
                 jobArrCombind([JobbElements]);
@@ -97,7 +98,6 @@ export async function normaliseInput(): Promise<void> {
             break;
         } else if (!isNaN(parseInt(nextPagePrompt))) {
             let jobNum: number = parseInt(nextPagePrompt) - 1;
-            //console.log(allJobsLst[jobNum].url);
             const reqs = await displayRequirements(allJobsLst[jobNum].url);
             if (allJobsLst[jobNum].url.includes('jobb.blocket')) {
                 console.log(`Se anonnsen för krav: \n${allJobsLst[jobNum].url}`);

@@ -3,6 +3,9 @@ import axios from "axios";
 import * as cheerio from "cheerio"
 import { attr } from "cheerio/lib/api/attributes";
 import { find } from "cheerio/lib/api/traversing";
+
+//type to handle the data we want to save
+//
 export type JobbLst = Array<{ title: string, stad:string, url: string}>
 
 
@@ -10,10 +13,11 @@ const prompt = promptSync();
 export const JobbElements: JobbLst = [];
 
 //webscraper function
-//@return{promise<void>} - ger ingen return, ändrar JobbElements och signalerar att den är klar
-//@param{sida} - vilket sidanummer som datan ska hämtas ifrån
-//@param{jobbstad} - vilket jobb som skall sökas efter, och i vilken stad
-//@precondition - att sidan, staden samt jobbet finns på hemsidan
+//@return{promise<void>} - Doesent have any retrun value, changes JobbElements and resloves a promise
+//@param{sida} - Witch page we are on
+//@param{jobbstad} - Witch city and job we want to search for
+//@precondition - That the page exists, as well as 'jobbstad' is enterd 
+// with the job first and city after with a space between
 export function main(sida:string, jobbstad: string): Promise<void>{
     const stadarr = jobbstad.split(" ");
     const jobb = stadarr[0]
@@ -48,7 +52,7 @@ export function main(sida:string, jobbstad: string): Promise<void>{
     });
 };
 
-//funktionen som gör att man kan köra main
+//test function for main function
 async function RunFunc(): Promise<void>{
     let job = prompt("vilket jobb och stad: ");
     let page = prompt("vilken vill du börja på: ");
@@ -72,4 +76,4 @@ async function RunFunc(): Promise<void>{
     }
     
 }
-//RunFunc();
+
