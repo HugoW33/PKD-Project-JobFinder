@@ -18,3 +18,5 @@ Requirements:<br/>
    tsc main.ts && node main.js<br/>
 
 3. Follow the instructions of the program<br/>
+
+4. If jest tescases are to be run, you must remove the 'normaliseInput' function call in main.ts
