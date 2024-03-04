@@ -14,7 +14,8 @@ Requirements:<br/>
     -npm install axios<br/>
     (you may need to add sudo before "npm" if you run into permission issues)<br/>
 <br/>
-2. Run the following command:<br/>
+2. Make sure you are in the folder of the main file.<br/>
+2.1 Run the following command:
    tsc main.ts && node main.js<br/>
 
 3. Follow the instructions of the program<br/>
