@@ -14,12 +14,13 @@ import { type JobbLst } from "./scraper_one";
  * @preconditions
  *   * The provided `ms` value is a non-negative number. 
  */
-
 function delay(ms: number) : Promise<void>{
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export const JobLstArr: JobbLst = [];
+
+
 /**
  * Asynchronously retrieves job listing header titles and their corresponding 
  * URLs from Arbetsförmedlingen, based on a provided search query and page number.
@@ -31,12 +32,11 @@ export const JobLstArr: JobbLst = [];
  * @preconditions
  * pageNumber must be a non-negative number.
  */
-
 export async function retrieveHeaderUrls(searchQuery: string, pageNumber: number): Promise<JobbLst> {
     const chromeOptions = new Options();
     chromeOptions.addArguments("--headless");
     
-    // Setup Chrome driver
+   
     const driver: WebDriver = await new Builder()
         .forBrowser("chrome")
         .setChromeOptions(chromeOptions)
@@ -44,21 +44,16 @@ export async function retrieveHeaderUrls(searchQuery: string, pageNumber: number
         .build();
 
     try {
-        // Navigate to the webpage
         await driver.get(`https://arbetsformedlingen.se/platsbanken/annonser?q=${encodeURIComponent(searchQuery)}&page=${pageNumber}`);
         await delay(500);
-        // Retrieve all headers with URLs
         const headerElements = await driver.findElements(By.css("h3 a"));
-        //
-        // Extract header text and URL
         for (const headerElement of headerElements) {
             const headerText = await headerElement.getText();
             const url = await headerElement.getAttribute("href");
-            if (headerText && url) { // Check for null values
+            if (headerText && url) { 
                 JobLstArr.push({ title: headerText, stad: '', url: url });
             }
         }
-
         return JobLstArr;
     } finally {
         await driver.quit();
@@ -73,11 +68,11 @@ export async function retrieveHeaderUrls(searchQuery: string, pageNumber: number
  *          a job requirement and contains a `header` property with the requirement's text. 
  * 
  */
-export async function displayRequirements(url:string): Promise<{ header: string}[]> {
+export async function displayRequirements(url:string):
+                                          Promise<{ header: string}[]> {
     const chromeOptions = new Options();
     chromeOptions.addArguments("--headless");
 
-    // Setup Chrome driver
     const driver: WebDriver = await new Builder()
         .forBrowser("chrome")
         .setChromeOptions(chromeOptions)
@@ -92,7 +87,7 @@ export async function displayRequirements(url:string): Promise<{ header: string}
     
         for (const req of requirements) {
             const reqText = await req.getText();
-            if (reqText) { // Check for null values
+            if (reqText) { 
 
                 reqString.push({ header: reqText});
 
