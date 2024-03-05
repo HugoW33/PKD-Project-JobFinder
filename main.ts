@@ -9,10 +9,25 @@ const prompt = promptSync();
 export const allJobsLst: JobbLst = [];
 let testMode: boolean = false
 
-//Function that combines diffrant JobbLst 
-//@return{void} - Doesent return anything
-//@param{arr} - Array<JobbLst> containing the JobbLst's to be combined
-//@precondition - The imput fufils the type requirements
+/**
+ * Function to toggle test mode. Needed because some functionality is hard to test
+ * and requires some slight modification of the code. Is only to be used in
+ * main.test.ts
+ * @param mode - boolean input that tells the program if test mode is to
+ * be toggled
+ * @returns void
+ */
+export const toggleTestMode = (mode: boolean): void => {
+    testMode = mode;
+};
+
+/**
+ * Function to combine results from different web scrapers used.
+ * Pushes information to the string array and the behind the hood
+ * array allJobsLst used to store raw data not shown to the user
+ * @param arr - An array containing objects with type JobbLst
+ * @returns void
+ */
 export function jobArrCombind(arr: Array<JobbLst>): void {
     let numberOfJobsPerPage = 0;
     for (let i = 0; i < arr.length; i++) {
