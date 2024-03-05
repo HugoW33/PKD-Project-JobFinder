@@ -7,6 +7,7 @@ const prompt = promptSync();
 //Array with type jobLst used to print out relevant information that is not
 //displayed to the user
 export const allJobsLst: JobbLst = [];
+let testMode: boolean = false
 
 //Function that combines diffrant JobbLst 
 //@return{void} - Doesent return anything
@@ -75,19 +76,23 @@ export async function normaliseInput(): Promise<void> {
             page += 1;
             await scraperTwoMain(job.toLocaleLowerCase(), page);
             if (JobbElements.length % 13 !== 0 && lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
-                console.error('Inga fler jobb !');
+                if (testMode) {
+                    console.log('Inga fler jobb !');
+                    break;
+                }
+                console.log('Inga fler jobb !');
                 continue;
             }
 
             if (JobbElements.length % 13 === 0) {
                 await scraperOneMain(page.toString(), job.toLocaleLowerCase());
             } else {
-                console.error('Inga fler jobb på blocket !!');
+                console.log('Inga fler jobb på blocket !!');
                 jobArrCombind([JobLstArr]);
             }
 
             if (lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
-                console.error('Inga fler jobb på Arbetsförmedlingen');
+                console.log('Inga fler jobb på Arbetsförmedlingen');
                 jobArrCombind([JobbElements]);
             } else {
                 jobArrCombind([JobbElements, JobLstArr]);
@@ -115,4 +120,5 @@ export async function normaliseInput(): Promise<void> {
     }
 }
 
+//Function call has to be commented out or removed for tests to work
 //normaliseInput();
