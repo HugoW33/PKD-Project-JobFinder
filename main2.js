@@ -169,6 +169,7 @@ function displayRequirements(url) {
     });
 }
 exports.displayRequirements = displayRequirements;
+//function to test the webscraper individually
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         var searchQuery, pageNumber, headersWithUrls, option, selectedLinkIndex, selectedLink, reqs, search, nextPagePrompt;

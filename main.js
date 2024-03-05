@@ -40,7 +40,7 @@ exports.normaliseInput = exports.jobArrCombind = exports.allJobsLst = void 0;
 var scraper_one_1 = require("./scraper_one");
 var promptSync = require("prompt-sync");
 var main2_1 = require("./main2");
-var JobbArr = [];
+exports.JobbArr = [];
 var prompt = promptSync();
 //Array with type jobLst used to print out relevant information that is not
 //displayed to the user
