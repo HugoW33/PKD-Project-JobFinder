@@ -143,4 +143,4 @@ export async function normaliseInput(): Promise<void> {
 }
 
 //Function call has to be commented out or removed for tests to work
-//normaliseInput();
+normaliseInput();
