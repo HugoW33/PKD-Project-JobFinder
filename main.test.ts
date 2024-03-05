@@ -73,7 +73,8 @@ test('Make sure that main1 resolves',async () => {
 
 test('the data of the function is an instance of a JobLst', async () => {
     return await main2('mekaniker uppsala', 1).then(data => {
-        expect(data).toBeInstanceOf(Array<{title: string, stad: string, url: string}>);
+        expect(data).
+        toBeInstanceOf(Array<{title: string, stad: string, url: string}>);
     });
 });
 
@@ -94,6 +95,7 @@ test('Test if main1 gives a return value', async () => {
 
 test('Test the return value of main1 function', async () => {
     return await main1('1', 'mekaniker uppsala').then(data => {
-        expect(JobbElements).toBeInstanceOf(Array<{title: string, stad: string, url: string}>);
+        expect(JobbElements).
+        toBeInstanceOf(Array<{title: string, stad: string, url: string}>);
     });
 });
