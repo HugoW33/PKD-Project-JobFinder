@@ -36,104 +36,139 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.normaliseInput = exports.jobArrCombind = exports.allJobsLst = void 0;
 var scraper_one_1 = require("./scraper_one");
 var promptSync = require("prompt-sync");
 var main2_1 = require("./main2");
 var JobbArr = [];
 var prompt = promptSync();
+//Array with type jobLst used to print out relevant information that is not
+//displayed to the user
+exports.allJobsLst = [];
+function jobArrCombind(arr) {
+    var numberOfJobsPerPage = 0;
+    for (var i = 0; i < arr.length; i++) {
+        var _loop_1 = function (jobLsting) {
+            var exists = false;
+            exports.allJobsLst.forEach(function (element) {
+                if (element.url === jobLsting.url) {
+                    exists = true;
+                }
+            });
+            if (exists) {
+                return "continue";
+            }
+            if (jobLsting.stad !== '') {
+                JobbArr.push("".concat(JobbArr.length + 1, ": ").concat(jobLsting.title, " i ").concat(jobLsting.stad));
+                exports.allJobsLst.push({ title: jobLsting.title, stad: jobLsting.stad,
+                    url: jobLsting.url });
+            }
+            else {
+                JobbArr.push("".concat(JobbArr.length + 1, ": ").concat(jobLsting.title));
+                exports.allJobsLst.push({ title: jobLsting.title, stad: jobLsting.stad,
+                    url: jobLsting.url });
+            }
+            numberOfJobsPerPage++;
+            if (numberOfJobsPerPage >= 25) {
+                return { value: void 0 };
+            }
+        };
+        for (var _i = 0, _a = arr[i]; _i < _a.length; _i++) {
+            var jobLsting = _a[_i];
+            var state_1 = _loop_1(jobLsting);
+            if (typeof state_1 === "object")
+                return state_1.value;
+        }
+    }
+}
+exports.jobArrCombind = jobArrCombind;
+function arrayToText(arr) {
+    for (var i = 0; i < arr.length; i++) {
+        console.log("\n ".concat(arr[i]));
+    }
+}
 function normaliseInput() {
     return __awaiter(this, void 0, void 0, function () {
-        var i, job, page, question, a, NumPage, allJobsLst, i_1, i_2, nextPagePrompt, num, i_3, i_4, jobNum, cringe;
+        var job, page, nextPagePrompt, lastIndex, jobNum, reqs;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    i = 0;
                     job = prompt("vilket jobb och stad: ");
-                    page = prompt("vilken vill du börja på: ");
-                    question = prompt("vilken sida vill du sluta på: ");
-                    a = +page;
-                    _a.label = 1;
+                    page = 1;
+                    //let question = prompt("vilken sida vill du sluta på: ");
+                    return [4 /*yield*/, (0, scraper_one_1.main)(page.toString(), job.toLocaleLowerCase())];
                 case 1:
-                    if (!(a <= +question)) return [3 /*break*/, 5];
-                    return [4 /*yield*/, (0, scraper_one_1.main)(page.toLocaleLowerCase(), job.toLocaleLowerCase())];
+                    //let question = prompt("vilken sida vill du sluta på: ");
+                    _a.sent();
+                    return [4 /*yield*/, (0, main2_1.retrieveHeaderUrls)(job.toLocaleLowerCase(), page)];
                 case 2:
                     _a.sent();
-                    return [4 /*yield*/, (0, main2_1.retrieveHeaderUrls)(job.toLocaleLowerCase(), +page.toLocaleLowerCase())];
+                    // const NumPage = (+page) + 1;
+                    // page = NumPage;
+                    // console.log(JobbElements);
+                    jobArrCombind([scraper_one_1.JobbElements, main2_1.JobLstArr]);
+                    //console.log(JobbArr);
+                    arrayToText(JobbArr);
+                    _a.label = 3;
                 case 3:
-                    _a.sent();
-                    if (a === +question) {
-                        return [3 /*break*/, 5];
-                    }
-                    else {
-                        NumPage = (+page) + 1;
-                        page = NumPage.toString();
-                    }
-                    _a.label = 4;
-                case 4:
-                    a++;
-                    return [3 /*break*/, 1];
-                case 5:
-                    allJobsLst = [];
-                    for (i_1 = JobbArr.length + 1; i_1 < scraper_one_1.JobbElements.length; i_1++) {
-                        JobbArr.push("".concat(i_1, ": ").concat(scraper_one_1.JobbElements[i_1].title, " i ").concat(scraper_one_1.JobbElements[i_1].stad));
-                        allJobsLst.push({ title: scraper_one_1.JobbElements[i_1].title, stad: scraper_one_1.JobbElements[i_1].stad,
-                            url: scraper_one_1.JobbElements[i_1].url });
-                    }
-                    for (i_2 = JobbArr.length; i_2 < main2_1.JobLstArr.length; i_2++) {
-                        JobbArr.push("".concat(i_2, ": ").concat(main2_1.JobLstArr[i_2].title));
-                        allJobsLst.push({ title: main2_1.JobLstArr[i_2].title, stad: main2_1.JobLstArr[i_2].stad,
-                            url: main2_1.JobLstArr[i_2].url });
-                    }
-                    console.log(JobbArr);
-                    _a.label = 6;
-                case 6:
-                    if (!true) return [3 /*break*/, 14];
+                    if (!true) return [3 /*break*/, 13];
                     nextPagePrompt = prompt('vill du se en sida till? (ja/nej) eller vill du visa ett jobb (svara med annaonsens siffra): ');
-                    if (!(nextPagePrompt.toLocaleLowerCase() === 'ja')) return [3 /*break*/, 9];
-                    num = (+page) + 1;
-                    page = num.toString();
-                    return [4 /*yield*/, (0, scraper_one_1.main)(page.toLocaleLowerCase(), job.toLocaleLowerCase())];
+                    if (!(nextPagePrompt.toLocaleLowerCase() === 'ja')) return [3 /*break*/, 8];
+                    lastIndex = main2_1.JobLstArr.slice(-1);
+                    page += 1;
+                    if (scraper_one_1.JobbElements.length % 13 !== 0 && lastIndex[0].url === main2_1.JobLstArr.slice(-1)[0].url) {
+                        console.error('Inga fler jobb !');
+                        return [3 /*break*/, 3];
+                    }
+                    if (!(scraper_one_1.JobbElements.length % 13 === 0)) return [3 /*break*/, 5];
+                    return [4 /*yield*/, (0, scraper_one_1.main)(page.toString(), job.toLocaleLowerCase())];
+                case 4:
+                    _a.sent();
+                    return [3 /*break*/, 6];
+                case 5:
+                    console.error('Inga fler jobb på blocket !!');
+                    jobArrCombind([main2_1.JobLstArr]);
+                    _a.label = 6;
+                case 6: return [4 /*yield*/, (0, main2_1.retrieveHeaderUrls)(job.toLocaleLowerCase(), page)];
                 case 7:
                     _a.sent();
-                    return [4 /*yield*/, (0, main2_1.retrieveHeaderUrls)(job.toLocaleLowerCase(), +page)];
+                    //const num = page + 1;
+                    if (lastIndex[0].url === main2_1.JobLstArr.slice(-1)[0].url) {
+                        console.error('Inga fler jobb på Arbetsförmedlingen');
+                        jobArrCombind([scraper_one_1.JobbElements]);
+                    }
+                    else {
+                        jobArrCombind([scraper_one_1.JobbElements, main2_1.JobLstArr]);
+                    }
+                    arrayToText(JobbArr);
+                    return [3 /*break*/, 12];
                 case 8:
-                    _a.sent();
-                    for (i_3 = JobbArr.length; i_3 < scraper_one_1.JobbElements.length; i_3++) {
-                        JobbArr.push("".concat(i_3, ": ").concat(scraper_one_1.JobbElements[i_3].title, " i ").concat(scraper_one_1.JobbElements[i_3].stad));
-                        allJobsLst.push({ title: scraper_one_1.JobbElements[i_3].title, stad: scraper_one_1.JobbElements[i_3].stad,
-                            url: scraper_one_1.JobbElements[i_3].url });
-                    }
-                    for (i_4 = JobbArr.length; i_4 < main2_1.JobLstArr.length; i_4++) {
-                        JobbArr.push("".concat(i_4, ": ").concat(main2_1.JobLstArr[i_4].title));
-                        allJobsLst.push({ title: main2_1.JobLstArr[i_4].title, stad: main2_1.JobLstArr[i_4].stad,
-                            url: main2_1.JobLstArr[i_4].url });
-                    }
-                    console.log(JobbArr);
+                    if (!(nextPagePrompt.toLocaleLowerCase() === 'nej')) return [3 /*break*/, 9];
                     return [3 /*break*/, 13];
                 case 9:
-                    if (!(nextPagePrompt.toLocaleLowerCase() === 'nej')) return [3 /*break*/, 10];
-                    return [3 /*break*/, 14];
+                    if (!!isNaN(parseInt(nextPagePrompt))) return [3 /*break*/, 11];
+                    jobNum = parseInt(nextPagePrompt) - 1;
+                    return [4 /*yield*/, (0, main2_1.displayRequirements)(exports.allJobsLst[jobNum].url)];
                 case 10:
-                    if (!!isNaN(parseInt(nextPagePrompt))) return [3 /*break*/, 12];
-                    jobNum = parseInt(nextPagePrompt);
-                    console.log(allJobsLst[jobNum].url);
-                    return [4 /*yield*/, (0, main2_1.displayRequirements)(allJobsLst[jobNum].url)];
-                case 11:
-                    cringe = _a.sent();
-                    if (allJobsLst[jobNum].url.includes('jobb.blocket')) {
-                        console.log("Se l\u00E4nk: \n".concat(allJobsLst[jobNum].url));
+                    reqs = _a.sent();
+                    if (exports.allJobsLst[jobNum].url.includes('jobb.blocket')) {
+                        console.log("Se anonnsen f\u00F6r krav: \n".concat(exports.allJobsLst[jobNum].url));
                     }
-                    cringe.forEach(function (cringe) {
-                        console.log(cringe.header);
-                    });
-                    return [3 /*break*/, 13];
-                case 12:
+                    else {
+                        console.log("Annons: ".concat(exports.allJobsLst[jobNum].url));
+                        reqs.forEach(function (reqs) {
+                            console.log(reqs.header);
+                        });
+                    }
+                    return [3 /*break*/, 12];
+                case 11:
                     console.log('Inte ett giltigt svar!');
-                    _a.label = 13;
-                case 13: return [3 /*break*/, 6];
-                case 14: return [2 /*return*/];
+                    _a.label = 12;
+                case 12: return [3 /*break*/, 3];
+                case 13: return [2 /*return*/];
             }
         });
     });
 }
+exports.normaliseInput = normaliseInput;
 normaliseInput();
