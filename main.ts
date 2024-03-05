@@ -42,7 +42,9 @@ export function jobArrCombind(arr: Array<JobbLst>): void {
                 continue;
             }
             if (jobLsting.stad !== '') {
-                JobbArr.push(`${JobbArr.length + 1}: ${jobLsting.title} i ${jobLsting.stad}`);
+                JobbArr
+                .push(`${JobbArr.length + 1}: 
+                       ${jobLsting.title} i ${jobLsting.stad}`);
                 allJobsLst.push({title: jobLsting.title, stad: jobLsting.stad,
                                  url: jobLsting.url});
             } else {
@@ -57,18 +59,22 @@ export function jobArrCombind(arr: Array<JobbLst>): void {
         }
     }
 }
-//Text function
-//@return{void} - Doesent return anything, only console.log's
-//@param{arr} - A array<string> with n elements to be printed
-//@precondition - if the array is empty nothing happens. 
+/**
+ * Function used to convert an array with strings to plain text. 
+ * @param arr - Array with strings that are to be printed out
+ * @returns void
+ */
 function arrayToText(arr: Array<string>): void {
     for (let i = 0; i < arr.length; i++) {
         console.log(`\n ${arr[i]}`);
     }
 }
-//Main runing function
-//@return{promise<void>} - doesent return anything, resolves a prommise
-//@precondition - The imputs provided by the user are of the type that the prompt asks for
+
+/**
+ * Main function. Used to get user input and print out the data from the 
+ * different web scrapers.
+ * @returns void
+ */
 export async function normaliseInput(): Promise<void> {
     const job: string = prompt("vilket jobb och stad: ");
     if (job === undefined) {
@@ -90,10 +96,11 @@ export async function normaliseInput(): Promise<void> {
             const lastIndex = JobLstArr.slice(-1);
             page += 1;
             await scraperTwoMain(job.toLocaleLowerCase(), page);
-            if (JobbElements.length % 13 !== 0 && lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
+            if (JobbElements.length % 13 !== 0 
+                && lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
                 if (testMode) {
                     console.log('Inga fler jobb !');
-                    break;
+                    break;  
                 }
                 console.log('Inga fler jobb !');
                 continue;
