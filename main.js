@@ -42,8 +42,9 @@ var promptSync = require("prompt-sync");
 var main2_1 = require("./main2");
 exports.JobbArr = [];
 var prompt = promptSync();
-//Array with type jobLst used to print out relevant information that is not
-//displayed to the user
+/*Array with type jobLst used to print out relevant information that is not
+* displayed to the user
+*/
 exports.allJobsLst = [];
 //Function that combines diffrant JobbLst 
 //@return{void} - Doesent return anything
@@ -109,19 +110,13 @@ function normaliseInput() {
                         console.log('Oj, något gick fel!');
                     }
                     page = 1;
-                    //let question = prompt("vilken sida vill du sluta på: ");
                     return [4 /*yield*/, (0, scraper_one_1.main)(page.toString(), job.toLocaleLowerCase())];
                 case 1:
-                    //let question = prompt("vilken sida vill du sluta på: ");
                     _a.sent();
                     return [4 /*yield*/, (0, main2_1.retrieveHeaderUrls)(job.toLocaleLowerCase(), page)];
                 case 2:
                     _a.sent();
-                    // const NumPage = (+page) + 1;
-                    // page = NumPage;
-                    // console.log(JobbElements);
                     jobArrCombind([scraper_one_1.JobbElements, main2_1.JobLstArr]);
-                    //console.log(JobbArr);
                     arrayToText(exports.JobbArr);
                     _a.label = 3;
                 case 3:
@@ -147,7 +142,6 @@ function normaliseInput() {
                     jobArrCombind([main2_1.JobLstArr]);
                     _a.label = 7;
                 case 7:
-                    //const num = page + 1;
                     if (lastIndex[0].url === main2_1.JobLstArr.slice(-1)[0].url) {
                         console.error('Inga fler jobb på Arbetsförmedlingen');
                         jobArrCombind([scraper_one_1.JobbElements]);
@@ -186,4 +180,4 @@ function normaliseInput() {
     });
 }
 exports.normaliseInput = normaliseInput;
-//normaliseInput();
+normaliseInput();

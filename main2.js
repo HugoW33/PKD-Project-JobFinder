@@ -39,11 +39,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.displayRequirements = exports.retrieveHeaderUrls = exports.JobLstArr = void 0;
 var selenium_webdriver_1 = require("selenium-webdriver");
 var chrome_1 = require("selenium-webdriver/chrome");
-var readline = require("readline");
+/**
+ * Creates an asynchronous delay for a specified amount of time.
+ *
+ * @param ms - number. The duration of the delay in milliseconds.
+ * @returns A Promise that resolves after the specified delay.
+ *
+ * @preconditions
+ *   * The provided `ms` value is a non-negative number.
+ */
 function delay(ms) {
     return new Promise(function (resolve) { return setTimeout(resolve, ms); });
 }
 exports.JobLstArr = [];
+/**
+ * Asynchronously retrieves job listing header titles and their corresponding
+ * URLs from Arbetsförmedlingen, based on a provided search query and page number.
+ *
+ * @param searchQuery - string. The search term to use for querying job listings.
+ * @param pageNumber - number.  The page number of the search results to retrieve.
+ * @returns - Promise<JobbLst> A Promise that resolves to a JobbLst object, containing
+ *            arrays of job listing headers and their associated URLs.
+ * @preconditions
+ * pageNumber must be a non-negative number.
+ */
 function retrieveHeaderUrls(searchQuery, pageNumber) {
     return __awaiter(this, void 0, void 0, function () {
         var chromeOptions, driver, headerElements, _i, headerElements_1, headerElement, headerText, url;
@@ -102,19 +121,14 @@ function retrieveHeaderUrls(searchQuery, pageNumber) {
     });
 }
 exports.retrieveHeaderUrls = retrieveHeaderUrls;
-// Function to get user input
-function prompt(question) {
-    var rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-    return new Promise(function (resolve) {
-        rl.question(question, function (answer) {
-            rl.close();
-            resolve(answer);
-        });
-    });
-}
+/**
+ * Asynchronously extracts job requirements from a given URL and returns the requirements as an array of objects.
+ *
+ * @param url - string. The URL of the job posting page.
+ * @returns - Promise. A Promise that resolves to an array of objects, where each object represents
+ *          a job requirement and contains a `header` property with the requirement's text.
+ *
+ */
 function displayRequirements(url) {
     return __awaiter(this, void 0, void 0, function () {
         var chromeOptions, driver, requirements, reqString, _i, requirements_1, req, reqText;
@@ -169,67 +183,3 @@ function displayRequirements(url) {
     });
 }
 exports.displayRequirements = displayRequirements;
-//function to test the webscraper individually
-function main() {
-    return __awaiter(this, void 0, void 0, function () {
-        var searchQuery, pageNumber, headersWithUrls, option, selectedLinkIndex, selectedLink, reqs, search, nextPagePrompt;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, prompt("Enter your search query: ")];
-                case 1:
-                    searchQuery = _a.sent();
-                    pageNumber = 1;
-                    _a.label = 2;
-                case 2:
-                    if (!true) return [3 /*break*/, 12];
-                    return [4 /*yield*/, retrieveHeaderUrls(searchQuery, pageNumber)];
-                case 3:
-                    headersWithUrls = _a.sent();
-                    console.log("Headers with URLs (Page ".concat(pageNumber, "):"));
-                    headersWithUrls.forEach(function (headerWithUrl, index) {
-                        console.log("".concat(index + 1, ". ").concat(headerWithUrl.title));
-                    });
-                    return [4 /*yield*/, prompt("Enter the number of the link to view its contents, or type 'next' to go to the next page: ")];
-                case 4:
-                    option = _a.sent();
-                    if (!(option.toLowerCase() === "next")) return [3 /*break*/, 5];
-                    pageNumber++;
-                    return [3 /*break*/, 10];
-                case 5:
-                    selectedLinkIndex = parseInt(option) - 1;
-                    selectedLink = headersWithUrls[selectedLinkIndex];
-                    if (!selectedLink) return [3 /*break*/, 7];
-                    console.log("Showing information for: ".concat(selectedLink.title));
-                    return [4 /*yield*/, displayRequirements(selectedLink.url)];
-                case 6:
-                    reqs = _a.sent();
-                    reqs.forEach(function (req) {
-                        console.log(req.header);
-                    });
-                    return [3 /*break*/, 8];
-                case 7:
-                    console.log("Invalid option.");
-                    _a.label = 8;
-                case 8: return [4 /*yield*/, prompt("Continue? (y/n): ")];
-                case 9:
-                    search = _a.sent();
-                    if (search.toLowerCase() === "y") {
-                        return [3 /*break*/, 2];
-                    }
-                    else {
-                        return [3 /*break*/, 12];
-                    }
-                    _a.label = 10;
-                case 10: return [4 /*yield*/, prompt("Do you want to continue to the next page? (yes/no): ")];
-                case 11:
-                    nextPagePrompt = _a.sent();
-                    if (nextPagePrompt.toLowerCase() !== "yes") {
-                        return [3 /*break*/, 12]; // Exit loop if the user does not want to proceed to the next page
-                    }
-                    return [3 /*break*/, 2];
-                case 12: return [2 /*return*/];
-            }
-        });
-    });
-}
-//main();
