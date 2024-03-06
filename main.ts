@@ -7,11 +7,27 @@ const prompt = promptSync();
 //Array with type jobLst used to print out relevant information that is not
 //displayed to the user
 export const allJobsLst: JobbLst = [];
+let testMode: boolean = false
 
-//Function that combines diffrant JobbLst 
-//@return{void} - Doesent return anything
-//@param{arr} - Array<JobbLst> containing the JobbLst's to be combined
-//@precondition - The imput fufils the type requirements
+/**
+ * Function to toggle test mode. Needed because some functionality is hard to test
+ * and requires some slight modification of the code. Is only to be used in
+ * main.test.ts
+ * @param mode - boolean input that tells the program if test mode is to
+ * be toggled
+ * @returns void
+ */
+export const toggleTestMode = (mode: boolean): void => {
+    testMode = mode;
+};
+
+/**
+ * Function to combine results from different web scrapers used.
+ * Pushes information to the string array and the behind the hood
+ * array allJobsLst used to store raw data not shown to the user
+ * @param arr - An array containing objects with type JobbLst
+ * @returns void
+ */
 export function jobArrCombind(arr: Array<JobbLst>): void {
     let numberOfJobsPerPage = 0;
     for (let i = 0; i < arr.length; i++) {
@@ -26,7 +42,9 @@ export function jobArrCombind(arr: Array<JobbLst>): void {
                 continue;
             }
             if (jobLsting.stad !== '') {
-                JobbArr.push(`${JobbArr.length + 1}: ${jobLsting.title} i ${jobLsting.stad}`);
+                JobbArr
+                .push(`${JobbArr.length + 1}: 
+                       ${jobLsting.title} i ${jobLsting.stad}`);
                 allJobsLst.push({title: jobLsting.title, stad: jobLsting.stad,
                                  url: jobLsting.url});
             } else {
@@ -41,18 +59,22 @@ export function jobArrCombind(arr: Array<JobbLst>): void {
         }
     }
 }
-//Text function
-//@return{void} - Doesent return anything, only console.log's
-//@param{arr} - A array<string> with n elements to be printed
-//@precondition - if the array is empty nothing happens. 
+/**
+ * Function used to convert an array with strings to plain text. 
+ * @param arr - Array with strings that are to be printed out
+ * @returns void
+ */
 function arrayToText(arr: Array<string>): void {
     for (let i = 0; i < arr.length; i++) {
         console.log(`\n ${arr[i]}`);
     }
 }
-//Main runing function
-//@return{promise<void>} - doesent return anything, resolves a prommise
-//@precondition - The imputs provided by the user are of the type that the prompt asks for
+
+/**
+ * Main function. Used to get user input and print out the data from the 
+ * different web scrapers.
+ * @returns void
+ */
 export async function normaliseInput(): Promise<void> {
     const job: string = prompt("vilket jobb och stad: ");
     if (job === undefined) {
@@ -74,20 +96,25 @@ export async function normaliseInput(): Promise<void> {
             const lastIndex = JobLstArr.slice(-1);
             page += 1;
             await scraperTwoMain(job.toLocaleLowerCase(), page);
-            if (JobbElements.length % 13 !== 0 && lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
-                console.error('Inga fler jobb !');
+            if (JobbElements.length % 13 !== 0 
+                && lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
+                if (testMode) {
+                    console.log('Inga fler jobb !');
+                    break;  
+                }
+                console.log('Inga fler jobb !');
                 continue;
             }
 
             if (JobbElements.length % 13 === 0) {
                 await scraperOneMain(page.toString(), job.toLocaleLowerCase());
             } else {
-                console.error('Inga fler jobb på blocket !!');
+                console.log('Inga fler jobb på blocket !!');
                 jobArrCombind([JobLstArr]);
             }
 
             if (lastIndex[0].url === JobLstArr.slice(-1)[0].url) {
-                console.error('Inga fler jobb på Arbetsförmedlingen');
+                console.log('Inga fler jobb på Arbetsförmedlingen');
                 jobArrCombind([JobbElements]);
             } else {
                 jobArrCombind([JobbElements, JobLstArr]);
@@ -115,4 +142,5 @@ export async function normaliseInput(): Promise<void> {
     }
 }
 
-//normaliseInput();
+//Function call has to be commented out or removed for tests to work
+normaliseInput();
